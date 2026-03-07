@@ -100,7 +100,7 @@ function App() {
 
       {/* --- KHU VỰC BẢNG DỮ LIỆU --- */}
       <table border="1" cellPadding="10" style={{ borderCollapse: 'collapse', width: '80%', textAlign: 'center' }}>
-        <thead style={{ backgroundColor: '#f0f0f0' }}>
+        <thead style={{ backgroundColor: '#f0f0f0', color: '#000000' }}>
           <tr>
             <th>ID</th>
             <th>Tên</th>
