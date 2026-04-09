@@ -1,130 +1,65 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-const API_URL = 'https://nhom15be.sonnguyenhungthanh.io.vn/api/users';
+import Login from './pages/Auth/Login'; 
+import AdminLayout from './layouts/AdminLayout';
+import TeacherLayout from './layouts/TeacherLayout';
+
+// Nhập các trang bạn đã tạo
+import SinhVienList from './pages/SinhVien/SinhVienList';
+import GiangVienList from './pages/GiangVien/GiangVienList'; 
+import LichThiList from './pages/LichThi/LichThiList';
+import MonHocList from './pages/MonHoc/MonHocList';
+import PhanCongLichThi from './pages/LichThi/PhanCongLichThi';
+import ChiTietLichThi from './pages/LichThi/ChiTietLichThi';
+import TrainDuLieu from './pages/TrainDuLieu/TrainDuLieu';
+import PhongThiCaNhan from './pages/GiangVien/PhongThiCaNhan';
+import DiemDanhLichThi from './pages/GiangVien/DiemDanhLichThi';
+
+// Các component hiển thị tạm thời tránh bị lỗi
+const DummyAdmin = ({ title }) => <div style={{padding: '24px', background: 'white', borderRadius: '12px'}}><h2>Màn hình Admin: {title}</h2></div>;
+const DummyTeacher = ({ title }) => <div style={{padding: '24px', background: 'white', borderRadius: '12px'}}><h2>Màn hình Giáo viên: {title}</h2></div>;
 
 function App() {
-  const [users, setUsers] = useState([]);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-
-  // Biến này để theo dõi xem mình đang Sửa user nào. Nếu = null là đang Thêm mới.
-  const [editingId, setEditingId] = useState(null);
-
-  useEffect(() => {
-    getUsers();
-  }, []);
-
-  const getUsers = async () => {
-    const response = await axios.get(API_URL);
-    setUsers(response.data);
-  };
-
-  // --- HÀM XỬ LÝ KHI BẤM NÚT LƯU ---
-  const saveUser = async () => {
-    if (editingId !== null) {
-      // Đang có ID -> Chế độ Sửa (PUT)
-      await axios.put(`${API_URL}/${editingId}`, {
-        name: name,
-        email: email,
-        phone: phone
-      });
-      setEditingId(null); // Xong việc thì xóa trạng thái sửa
-    } else {
-      // Đang trống -> Chế độ Thêm mới (POST)
-      await axios.post(API_URL, {
-        name: name,
-        email: email,
-        phone: phone
-      });
-    }
-
-    // Dọn dẹp trắng các ô nhập liệu
-    setName('');
-    setEmail('');
-    setPhone('');
-    getUsers(); // Load lại bảng
-  };
-
-  // --- HÀM XỬ LÝ KHI BẤM NÚT SỬA Ở DƯỚI BẢNG ---
-  const clickEdit = (user) => {
-    // 1. Đẩy dữ liệu của user đó lên các ô input
-    setName(user.name);
-    setEmail(user.email);
-    setPhone(user.phone);
-    // 2. Lưu lại ID để báo cho hệ thống biết mình đang sửa
-    setEditingId(user.id);
-  };
-
-  // --- HÀM HỦY SỬA ---
-  const cancelEdit = () => {
-    setName('');
-    setEmail('');
-    setPhone('');
-    setEditingId(null); // Đưa về lại chế độ Thêm mới
-  };
-
-  // --- HÀM XÓA ---
-  const deleteUser = async (id) => {
-    await axios.delete(`${API_URL}/${id}`);
-    getUsers();
-  };
-
   return (
-    // Code CSS giúp căn giữa toàn bộ nội dung ra giữa màn hình
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px', fontFamily: 'sans-serif' }}>
-      <h1>Quản lý người dùng</h1>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/login" element={<Login />} />
 
-      {/* --- KHU VỰC NHẬP LIỆU --- */}
-      <div style={{ marginBottom: '30px', padding: '20px', border: '2px dashed #aaa', borderRadius: '10px' }}>
-        <h3 style={{ marginTop: 0, textAlign: 'center' }}>
-          {editingId ? "Đang sửa thông tin..." : "Thêm người dùng mới"}
-        </h3>
-        
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Tên" />
-          <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
-          <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Số điện thoại" />
+        {/* ------------------------------------- */}
+        {/* LUỒNG ADMIN */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<DummyAdmin title="Tổng quan Phòng Đào Tạo" />} /> 
           
-          <button onClick={saveUser} style={{ cursor: 'pointer', backgroundColor: editingId ? '#ff9800' : '#4caf50', color: 'white', border: 'none', padding: '5px 15px' }}>
-            {editingId ? "Cập nhật" : "Thêm ngay"}
-          </button>
+          {/* CÁC TRANG CHÍNH THỨC ĐÃ HOÀN THIỆN 👇 */}
+          <Route path="sinh-vien" element={<SinhVienList />} /> 
+          <Route path="giang-vien" element={<GiangVienList />} /> 
+          <Route path="lich-thi/:id/phan-cong" element={<PhanCongLichThi />} />
+          <Route path="lich-thi/:id/chi-tiet" element={<ChiTietLichThi />} />
+          <Route path="mon-hoc" element={<MonHocList />} />
+          <Route path="train-du-lieu" element={<TrainDuLieu />} />
+          <Route path="ds-phong-thi" element={<PhongThiCaNhan />} />
+          <Route path="diem-danh/:id" element={<DiemDanhLichThi />} />
+        
+   
+          
+          {/* CÁC TRANG CHƯA LÀM, HIỂN THỊ TẠM DUMMY */}
+           
+         <Route path="lich-thi" element={<LichThiList />} />
+        </Route>
 
-          {/* Nút Hủy chỉ xuất hiện khi đang ở chế độ Sửa */}
-          {editingId && (
-            <button onClick={cancelEdit} style={{ cursor: 'pointer' }}>Hủy</button>
-          )}
-        </div>
-      </div>
+        {/* ------------------------------------- */}
+        {/* LUỒNG GIÁO VIÊN */}
+        <Route path="/teacher" element={<TeacherLayout />}>
+          <Route index element={<DummyTeacher title="Tổng quan Lớp học của bạn" />} /> 
+          <Route path="lich-thi" element={<DummyTeacher title="Lịch thi toàn trường" />} /> 
+          <Route path="phong-thi" element={<DummyTeacher title="Danh sách phòng thi bạn gác" />} /> 
+          <Route path="tai-khoan" element={<DummyTeacher title="Thông tin cá nhân" />} /> 
+        </Route>
 
-      {/* --- KHU VỰC BẢNG DỮ LIỆU --- */}
-      <table border="1" cellPadding="10" style={{ borderCollapse: 'collapse', width: '80%', textAlign: 'center' }}>
-        <thead style={{ backgroundColor: '#f0f0f0', color: '#000000' }}>
-          <tr>
-            <th>ID</th>
-            <th>Tên</th>
-            <th>Email</th>
-            <th>SĐT</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.id}>
-              <td>{user.id}</td>
-              <td>{user.name}</td>
-              <td>{user.email}</td>
-              <td>{user.phone}</td>
-              <td>
-                <button onClick={() => clickEdit(user)} style={{ marginRight: '10px', cursor: 'pointer' }}>Sửa</button>
-                <button onClick={() => deleteUser(user.id)} style={{ cursor: 'pointer', color: 'red' }}>Xóa</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
