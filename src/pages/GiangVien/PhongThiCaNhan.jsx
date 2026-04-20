@@ -11,7 +11,6 @@ const location = useLocation();
   // Nếu đang ở /admin thì basePath là /admin, ngược lại là /giang-vien
   const basePath = location.pathname.startsWith('/admin') ? '/admin' : '/giang-vien';
   const token = localStorage.getItem('token');
-const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000/';
   useEffect(() => {
     fetchLichThiCaNhan();
   }, []);
@@ -20,7 +19,8 @@ const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000/';
     setIsLoading(true);
     try {
       // Gọi API lấy danh sách lịch thi
-      const res = await axios.get(`${baseURL}api/lichthi`, {
+      const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000';
+      const res = await axios.get(`${baseURL}/api/lichthi`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const rawData = res.data?.data?.data || res.data?.data || [];

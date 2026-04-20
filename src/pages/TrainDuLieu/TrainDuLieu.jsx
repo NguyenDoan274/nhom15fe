@@ -8,7 +8,7 @@ function TrainDuLieu() {
   
   const fileInputRef = useRef(null);
   const token = localStorage.getItem('token');
-  const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000/';
+  const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000';
 
   // Hàm thêm dòng log
   const addLog = (message, type = 'info') => {
@@ -56,7 +56,9 @@ function TrainDuLieu() {
       formData.append('hinh_anh', file);
 
       try {
-        const res = await axios.post(`${baseURL}api/admin/rekognition/train-ajax`, formData, {
+              
+
+        const res = await axios.post(`${baseURL}/api/admin/rekognition/train-ajax`, formData, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
@@ -106,7 +108,7 @@ function TrainDuLieu() {
       formData.append('hinh_anh', file);
 
       try {
-        const res = await axios.post(`${baseURL}api/admin/rekognition/retrain-ajax`, formData, {
+        const res = await axios.post(`${baseURL}/api/admin/rekognition/retrain-ajax`, formData, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'

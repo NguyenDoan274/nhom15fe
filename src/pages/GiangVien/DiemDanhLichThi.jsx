@@ -17,7 +17,6 @@ function DiemDanhLichThi() {
   const [chuaDiemDanh, setChuaDiemDanh] = useState(false);
 
   const token = localStorage.getItem('token');
-  const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000/';
 
   useEffect(() => {
     fetchDanhSach();
@@ -27,7 +26,8 @@ function DiemDanhLichThi() {
     setIsLoading(true);
     try {
       // Gọi API lấy danh sách sinh viên của phòng thi này
-      const res = await axios.get(`${baseURL}api/rekognition/diemdanh/${id}`, {
+      const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000';
+      const res = await axios.get(`${baseURL}/api/rekognition/diemdanh/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` },
         params: {
           search: searchTerm,
@@ -55,8 +55,9 @@ function DiemDanhLichThi() {
   // Hàm điểm danh thủ công (Checkbox)
   const handleToggleDiemDanh = async (diemDanhId) => {
     try {
+      const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000';
       // Gọi API toggle trạng thái điểm danh thủ công
-      await axios.post(`${baseURL}api/diemdanh/toggle`, 
+      await axios.post(`${baseURL}/api/diemdanh/toggle`, 
         { id: diemDanhId },
         { headers: { 'Authorization': `Bearer ${token}` } }
       );

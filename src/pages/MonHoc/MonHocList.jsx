@@ -13,8 +13,9 @@ function MonHocList() {
   const [formData, setFormData] = useState({ ma_mon: '', ten_mon: '' });
 
   const token = localStorage.getItem('token');
-  const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000/';
-  const apiBase = `${baseURL}api/admin/monhoc`; // API Backend
+  const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000';
+  const apiBase = `${baseURL}/api/admin/monhoc`;
+
 
   useEffect(() => {
     fetchData();

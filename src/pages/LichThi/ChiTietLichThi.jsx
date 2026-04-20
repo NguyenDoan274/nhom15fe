@@ -10,9 +10,8 @@ function ChiTietLichThi() {
   const [danhSachSinhVien, setDanhSachSinhVien] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-
+  const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000';
   const token = localStorage.getItem('token');
-  const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000/';
 
   useEffect(() => {
     fetchData();
@@ -22,7 +21,7 @@ function ChiTietLichThi() {
     setIsLoading(true);
     try {
       // Gọi API show() của LichThiController
-      const res = await axios.get(`${baseURL}api/lichthi/${id}`, {
+      const res = await axios.get(`${baseURL}/api/lichthi/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -46,7 +45,7 @@ function ChiTietLichThi() {
     if (!window.confirm("Bạn có chắc chắn muốn xóa sinh viên này khỏi phòng thi?")) return;
     try {
       // Gọi API removeStudent của LichThiController
-      await axios.delete(`${baseURL}api/lichthi/remove-student/${diemDanhId}`, {
+      await axios.delete(`${baseURL}/api/lichthi/remove-student/${diemDanhId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       fetchData(); // Tải lại bảng sau khi xóa

@@ -6,7 +6,6 @@ function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000/';
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -15,7 +14,8 @@ function Login() {
 
     try {
       // 1. GỌI API ĐĂNG NHẬP 
-      const response = await axios.post(`${baseURL}api/login`, {
+      const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000';
+      const response = await axios.post(`${baseURL}/api/login`, {
         email: email,
         password: password
       });

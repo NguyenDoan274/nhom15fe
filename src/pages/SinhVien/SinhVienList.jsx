@@ -8,6 +8,7 @@ function SinhVienList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [imageErrors, setImageErrors] = useState({});
 
   // Form states
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -23,8 +24,9 @@ function SinhVienList() {
   const [selectedExcelFile, setSelectedExcelFile] = useState(null);
 
   const token = localStorage.getItem('token');
-  const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000/';
-  const apiBase = `${baseURL}api/admin/sinhvien`;
+  const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000';
+
+  const apiBase = `${baseURL}/api/admin/sinhvien`;
 
   useEffect(() => { fetchData(); }, [currentPage, searchTerm]);
 
@@ -42,7 +44,15 @@ function SinhVienList() {
     } catch (err) { console.error("Lỗi:", err); }
     finally { setIsLoading(false); }
   };
+const getImageUrl = (sv) => {
+  if (!sv.ma_sv || !sv.lop) return 'https://via.placeholder.com/40';
 
+  // Chuyển tên lớp sang chữ thường để khớp với folder: D22_TH09 -> d22_th09
+  const folderLop = sv.lop.toLowerCase();
+  
+  // Đường dẫn: baseURL + thư mục uploads trên server
+  return `${baseURL}/uploads/hinhanh_sv/${folderLop}/${sv.ma_sv}.jpg`;
+};
   // Mở form để thêm mới
   const openAddForm = () => {
     setIsEditing(false);
@@ -183,7 +193,21 @@ function SinhVienList() {
               <td style={tdStyle}>{sv.ho_ten}</td>
               <td style={tdStyle}>{sv.lop}</td>
               <td style={tdStyle}>{sv.email}</td>
-              <td style={tdStyle}>{sv.hinh_anh ? '✅' : '❌'}</td>
+              <td style={tdStyle}><td style={tdStyle}>
+  {(!sv.hinh_anh || imageErrors[sv.id]) ? (
+    <span>❌</span>
+  ) : (
+    <img 
+      src={getImageUrl(sv)} 
+      alt={sv.ma_sv}
+      style={{ width: '40px', height: '40px', borderRadius: '4px', objectFit: 'cover', border: '1px solid #ddd' }}
+      onError={() => {
+        // Nếu lỗi, cập nhật ID này vào danh sách lỗi để React render lại thành ❌
+        setImageErrors(prev => ({ ...prev, [sv.id]: true }));
+      }}
+    />
+  )}
+</td></td>
               <td style={{...tdStyle, textAlign: 'center'}}>
                 <button onClick={() => openEditForm(sv)} style={{ border: 'none', background: 'none', cursor: 'pointer', marginRight: '10px' }}>✏️</button>
                 <button onClick={() => handleDelete(sv.id)} style={{ border: 'none', background: 'none', cursor: 'pointer' }}>🗑️</button>

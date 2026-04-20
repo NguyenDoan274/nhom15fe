@@ -28,11 +28,11 @@ function LichThiList() {
   const [targetLichThiId, setTargetLichThiId] = useState(null);
   const [mssvInput, setMssvInput] = useState('');
   const [studentPreview, setStudentPreview] = useState('');
-  const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000/';
 
   const token = localStorage.getItem('token');
-  const apiLichThi = `${baseURL}api/lichthi`; 
-  const apiMonHoc = `${baseURL}api/admin/monhoc`;
+  const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000';
+  const apiLichThi = `${baseURL}/api/lichthi`;
+  const apiMonHoc = `${baseURL}/api/admin/monhoc`;
 
   useEffect(() => {
     fetchMonHoc();
@@ -54,7 +54,7 @@ function LichThiList() {
       
       try {
         // Gọi API search-list của SinhVienController
-        const res = await axios.post(`${baseURL}api/sinhvien/search-list`, 
+        const res = await axios.post(`${baseURL}/api/sinhvien/search-list`, 
           { mssv: mssvArray }, 
           { headers: { 'Authorization': `Bearer ${token}` } }
         );

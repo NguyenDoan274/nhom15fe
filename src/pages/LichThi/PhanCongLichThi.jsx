@@ -18,7 +18,8 @@ function PhanCongLichThi() {
 
   const token = localStorage.getItem('token');
   const MAX_GIANG_VIEN = 3;
-  const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000/';
+  const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000';
+
 
   useEffect(() => {
     fetchAllData();
@@ -30,16 +31,16 @@ function PhanCongLichThi() {
       const headers = { 'Authorization': `Bearer ${token}` };
 
       // 1. Kéo Môn Học
-      const resMon = await axios.get(`${baseURL}api/admin/monhoc`, { headers });
+      const resMon = await axios.get(`${baseURL}/api/admin/monhoc`, { headers });
       setDanhSachMonHoc(resMon.data?.data?.data || resMon.data?.data || []);
 
       // 2. Kéo Tất cả Giảng Viên
-      const resGv = await axios.get(`${baseURL}api/admin/giangvien`, { headers });
+      const resGv = await axios.get(`${baseURL}/api/admin/giangvien`, { headers });
       const allGv = resGv.data?.data?.data || resGv.data?.data || [];
       setDanhSachTatCaGV(allGv);
 
       // 3. Kéo Dữ liệu Lịch thi & Phân công
-      const resPhanCong = await axios.get(`${baseURL}api/admin/lichthi/${id}/phancong`, { headers });
+      const resPhanCong = await axios.get(`${baseURL}/api/admin/lichthi/${id}/phancong`, { headers });
       const lich = resPhanCong.data?.data?.lichThi || {};
       setLichThi(lich);
 
@@ -75,7 +76,7 @@ function PhanCongLichThi() {
     
     try {
       // Gọi API chính
-      await axios.post(`${baseURL}api/admin/lichthi/${id}/phancong`, 
+      await axios.post(`${baseURL}/api/admin/lichthi/${id}/phancong`, 
         { lich_thi_id: id, giang_vien_id: selectedGvId }, 
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
@@ -84,7 +85,7 @@ function PhanCongLichThi() {
     } catch (err) {
       // CƠ CHẾ BACKUP: Nếu API trên lỗi, tự động vòng qua API của GiangVienController
       try {
-        await axios.post(`${baseURL}api/admin/giangvien/${selectedGvId}/assign/${id}`, {}, { headers: { 'Authorization': `Bearer ${token}` } });
+        await axios.post(`${baseURL}/api/admin/giangvien/${selectedGvId}/assign/${id}`, {}, { headers: { 'Authorization': `Bearer ${token}` } });
         alert("🎉 Đã lưu phân công thành công!");
         resetForm();
       } catch (fallbackErr) {
@@ -110,10 +111,10 @@ function PhanCongLichThi() {
     try {
       // Thử xóa bằng ID phân công (Cách 1)
       if (gv.phan_cong_id) {
-         await axios.delete(`${baseURL}api/admin/lichthi/${id}/phancong/${gv.phan_cong_id}`, { headers: { 'Authorization': `Bearer ${token}` } });
+         await axios.delete(`${baseURL}/api/admin/lichthi/${id}/phancong/${gv.phan_cong_id}`, { headers: { 'Authorization': `Bearer ${token}` } });
       } else {
          // Backup: Xóa bằng ID Giảng Viên (Cách 2)
-         await axios.delete(`${baseURL}api/admin/giangvien/${gv.id}/unassign/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
+         await axios.delete(`${baseURL}/api/admin/giangvien/${gv.id}/unassign/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
       }
       fetchAllData();
     } catch (err) {

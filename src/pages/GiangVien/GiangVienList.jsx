@@ -20,10 +20,10 @@ function GiangVienList() {
 
   // Excel state
   const [selectedExcelFile, setSelectedExcelFile] = useState(null);
-const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000/';
 
   const token = localStorage.getItem('token');
-  const apiBase = `${baseURL}api/admin/giangvien`;
+  const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000';
+  const apiBase = `${baseURL}/api/admin/giangvien`;
 
   useEffect(() => {
     fetchData();
