@@ -45,13 +45,14 @@ function SinhVienList() {
     finally { setIsLoading(false); }
   };
 const getImageUrl = (sv) => {
-  if (!sv.ma_sv || !sv.lop) return 'https://via.placeholder.com/40';
+  if (!sv.ma_sv || !sv.lop) return '❌';
 
   // Chuyển tên lớp sang chữ thường để khớp với folder: D22_TH09 -> d22_th09
   const folderLop = sv.lop.toLowerCase();
   
   // Đường dẫn: baseURL + thư mục uploads trên server
-  return `${baseURL}/uploads/hinhanh_sv/${folderLop}/${sv.ma_sv}.jpg`;
+  const timestamp = new Date().getTime();
+  return `${baseURL}/uploads/hinhanh_sv/${folderLop}/${sv.ma_sv}.jpg?t=${timestamp}`;
 };
   // Mở form để thêm mới
   const openAddForm = () => {
@@ -202,7 +203,6 @@ const getImageUrl = (sv) => {
       alt={sv.ma_sv}
       style={{ width: '40px', height: '40px', borderRadius: '4px', objectFit: 'cover', border: '1px solid #ddd' }}
       onError={() => {
-        // Nếu lỗi, cập nhật ID này vào danh sách lỗi để React render lại thành ❌
         setImageErrors(prev => ({ ...prev, [sv.id]: true }));
       }}
     />

@@ -60,53 +60,102 @@ function DiemDanhCamera() {
     fetchDanhSach();
   };
 
-  const captureAndRecognize = async () => {
-    if (!videoRef.current || !isCameraOpen) return;
+//   const captureAndRecognize = async () => {
+//     if (!videoRef.current || !isCameraOpen) return;
 
-    setIsProcessing(true);
-    setApiError(null); // Xóa lỗi cũ đi trước khi gọi mới
+//     setIsProcessing(true);
+//     setApiError(null); // Xóa lỗi cũ đi trước khi gọi mới
 
-    try {
-      const video = videoRef.current;
-      const canvas = document.createElement('canvas');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+//     try {
+//       const video = videoRef.current;
+//       const canvas = document.createElement('canvas');
+//       canvas.width = video.videoWidth;
+//       canvas.height = video.videoHeight;
+//       const ctx = canvas.getContext('2d');
+//       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       
-      const base64Image = canvas.toDataURL('image/jpeg', 0.8);
-const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000';
-      const resCompare = await axios.post(`${baseURL}/api/rekognition/compare-many/${id}`, {
-  hinh_anh_base64: base64Image
-}, {
-  headers: { 'Authorization': `Bearer ${token}` }
-});
+//       const base64Image = canvas.toDataURL('image/jpeg', 0.8);
+// const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000';
+//       const resCompare = await axios.post(`${baseURL}/api/rekognition/compare-many/${id}`, {
+//   hinh_anh_base64: base64Image
+// }, {
+//   headers: { 'Authorization': `Bearer ${token}` }
+// });
 
-      const detectedFaces = resCompare.data?.faces || [];
-      setFacesData(detectedFaces); 
+//       const detectedFaces = resCompare.data?.faces || [];
+//       setFacesData(detectedFaces); 
 
-      const indicesToConfirm = detectedFaces
-        .map((face, index) => (face.valid && !face.checkedIn) ? index : -1)
-        .filter(index => index !== -1);
+//       const indicesToConfirm = detectedFaces
+//         .map((face, index) => (face.valid && !face.checkedIn) ? index : -1)
+//         .filter(index => index !== -1);
 
-      if (indicesToConfirm.length > 0) {
-       await axios.post(`http://127.0.0.1:8000/api/rekognition/confirm-many/${id}`, {
-  faces: JSON.stringify(indicesToConfirm)
-}, {
-  headers: { 'Authorization': `Bearer ${token}` }
-});
-        fetchDanhSach(); 
-      }
+//       if (indicesToConfirm.length > 0) {
+//       await axios.post(`${baseURL}/api/rekognition/confirm-many/${id}`, {
+//   faces: JSON.stringify(indicesToConfirm)
+// }, {
+//   headers: { 'Authorization': `Bearer ${token}` }
+// });
+//         fetchDanhSach(); 
+//       }
 
-    } catch (err) {
-      // NẾU BACKEND LỖI, IN THẲNG RA MÀN HÌNH ĐỂ BẠN THẤY
-      const errorMsg = err.response?.data?.message || err.message;
-      setApiError(errorMsg);
-      setFacesData([]); // Xóa khung nhận diện vì lỗi
-    } finally {
-      setIsProcessing(false); 
+//     } catch (err) {
+//       // NẾU BACKEND LỖI, IN THẲNG RA MÀN HÌNH ĐỂ BẠN THẤY
+//       const errorMsg = err.response?.data?.message || err.message;
+//       setApiError(errorMsg);
+//       setFacesData([]); // Xóa khung nhận diện vì lỗi
+//     } finally {
+//       setIsProcessing(false); 
+//     }
+//   };
+
+const captureAndRecognize = async () => {
+  if (!videoRef.current || !isCameraOpen) return;
+
+  setIsProcessing(true);
+  setApiError(null);
+
+  try {
+    const video = videoRef.current;
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    const base64Image = canvas.toDataURL('image/jpeg', 0.8);
+    const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000';
+
+    // 1. Gọi API nhận diện khuôn mặt
+    const resCompare = await axios.post(`${baseURL}/api/rekognition/compare-many/${id}`, 
+      { hinh_anh_base64: base64Image },
+      { headers: { 'Authorization': `Bearer ${token}` } }
+    );
+
+    const detectedFaces = resCompare.data?.faces || [];
+    setFacesData(detectedFaces); 
+
+    // 2. Lọc ra các đối tượng Hợp lệ và Chưa điểm danh
+    const listToConfirm = detectedFaces.filter(face => face.valid && !face.checkedIn);
+
+    if (listToConfirm.length > 0) {
+      // 3. GỬI NGUYÊN MẢNG OBJECT LÊN (Không gửi index nữa)
+      await axios.post(`${baseURL}/api/rekognition/confirm-many/${id}`, {
+        detected_faces: listToConfirm 
+      }, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      // 4. Load lại bảng danh sách để cập nhật trạng thái màu xanh/vàng
+      fetchDanhSach(); 
     }
-  };
+
+  } catch (err) {
+    const errorMsg = err.response?.data?.message || err.message;
+    setApiError(errorMsg);
+  } finally {
+    setIsProcessing(false); 
+  }
+};
 
   const toggleCamera = async () => {
     if (isCameraOpen) stopCamera();
