@@ -282,7 +282,7 @@ const captureAndRecognize = async () => {
                     <td style={tdStyle}>{index + 1}</td><td style={tdStyle}>{sv.ma_sv || '-'}</td><td style={tdStyle}>{sv.ho_ten || '-'}</td><td style={tdStyle}>{sv.lop || '-'}</td>
                     <td style={tdStyle}><input type="checkbox" checked={isChecked} readOnly disabled /></td>
                     <td style={{...tdStyle, color: isChecked ? '#198754' : '#6b7280', fontWeight: isChecked ? 'bold' : 'normal'}}>{item.ket_qua || 'Chưa có'}</td>
-                    <td style={tdStyle}>{item.do_chinh_xac ? `${Math.round(item.do_chinh_xac)}%` : '-'}</td>
+                    <td style={tdStyle}>{item.do_chinh_xac ? `${item.do_chinh_xac}%` : '-'}</td>
                     <td style={tdStyle}>{item.thoi_gian_dd ? new Date(item.thoi_gian_dd).toLocaleTimeString('vi-VN', { hour12: false }) : '-'}</td>
                     <td style={tdStyle}>{item.hinh_thuc || '-'}</td>
                   </tr>
