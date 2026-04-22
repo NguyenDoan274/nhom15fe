@@ -20,9 +20,6 @@ function SinhVienList() {
     ma_sv: '', ho_ten: '', email: '', lop_y: '', lop_z: '', hinh_anh: null
   });
 
-  const [isExcelModalOpen, setIsExcelModalOpen] = useState(false);
-  const [selectedExcelFile, setSelectedExcelFile] = useState(null);
-
   const token = localStorage.getItem('token');
   const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000';
 
@@ -44,28 +41,23 @@ function SinhVienList() {
     } catch (err) { console.error("Lỗi:", err); }
     finally { setIsLoading(false); }
   };
-const getImageUrl = (sv) => {
-  if (!sv.ma_sv || !sv.lop) return '❌';
 
-  // Chuyển tên lớp sang chữ thường để khớp với folder: D22_TH09 -> d22_th09
-  const folderLop = sv.lop.toLowerCase();
-  
-  // Đường dẫn: baseURL + thư mục uploads trên server
-  const timestamp = new Date().getTime();
-  return `${baseURL}/uploads/hinhanh_sv/${folderLop}/${sv.ma_sv}.jpg?t=${timestamp}`;
-};
-  // Mở form để thêm mới
+  const getImageUrl = (sv) => {
+    if (!sv.ma_sv || !sv.lop) return '❌';
+    const folderLop = sv.lop.toLowerCase();
+    const timestamp = new Date().getTime();
+    return `${baseURL}/uploads/hinhanh_sv/${folderLop}/${sv.ma_sv}.jpg?t=${timestamp}`;
+  };
+
   const openAddForm = () => {
     setIsEditing(false);
     setFormData({ ma_sv: '', ho_ten: '', email: '', lop_y: '', lop_z: '', hinh_anh: null });
     setIsFormOpen(true);
   };
 
-  // Mở form để sửa
   const openEditForm = (sv) => {
     setIsEditing(true);
     setSelectedId(sv.id);
-    // Tách chuỗi D25_TH01 thành 25 và 01
     const match = sv.lop?.match(/D(\d+)_TH(\d+)/);
     setFormData({
       ma_sv: sv.ma_sv,
@@ -78,7 +70,6 @@ const getImageUrl = (sv) => {
     setIsFormOpen(true);
   };
 
-  // Xử lý Xóa
   const handleDelete = async (id) => {
     if (!window.confirm("Bạn có chắc chắn muốn xóa sinh viên này?")) return;
     try {
@@ -97,7 +88,7 @@ const getImageUrl = (sv) => {
     data.append('lop_y', formData.lop_y);
     data.append('lop_z', formData.lop_z);
     if (formData.hinh_anh) data.append('hinh_anh', formData.hinh_anh);
-    if (isEditing) data.append('_method', 'PUT'); // Laravel yêu cầu khi gửi FormData cho Update
+    if (isEditing) data.append('_method', 'PUT');
 
     try {
       const url = isEditing ? `${apiBase}/${selectedId}` : apiBase;
@@ -105,28 +96,13 @@ const getImageUrl = (sv) => {
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
       });
       alert(isEditing ? "Cập nhật thành công!" : "Thêm thành công!");
+      setIsFormOpen(true); // Giữ form mở hoặc đóng tùy ý bạn, thường là false
       setIsFormOpen(false);
       fetchData();
     } catch (err) { 
         const msg = err.response?.data?.message || "Lỗi dữ liệu!";
         alert(msg); 
     }
-  };
-
-  const handleImportExcel = async (e) => {
-    e.preventDefault();
-    if (!selectedExcelFile) return;
-    const data = new FormData();
-    data.append('file', selectedExcelFile); // Backend yêu cầu field tên là 'file'
-
-    try {
-      await axios.post(`${apiBase}/import`, data, {
-        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
-      });
-      alert("Import thành công!");
-      setIsExcelModalOpen(false);
-      fetchData();
-    } catch (err) { alert("Lỗi Import!"); }
   };
 
   if (isFormOpen) {
@@ -162,8 +138,7 @@ const getImageUrl = (sv) => {
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
         <h2 style={{ margin: 0 }}>Quản lý Sinh viên ({totalRecords})</h2>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <button onClick={() => setIsExcelModalOpen(true)} style={btnExcel}>📥 Nhập Excel</button>
-          <button onClick={openAddForm} style={btnAdd}>+ Thêm thủ công</button>
+          <button onClick={openAddForm} style={btnAdd}>+ Thêm sinh viên</button>
         </div>
       </div>
 
@@ -194,20 +169,20 @@ const getImageUrl = (sv) => {
               <td style={tdStyle}>{sv.ho_ten}</td>
               <td style={tdStyle}>{sv.lop}</td>
               <td style={tdStyle}>{sv.email}</td>
-              <td style={tdStyle}><td style={tdStyle}>
-  {(!sv.hinh_anh || imageErrors[sv.id]) ? (
-    <span>❌</span>
-  ) : (
-    <img 
-      src={getImageUrl(sv)} 
-      alt={sv.ma_sv}
-      style={{ width: '40px', height: '40px', borderRadius: '4px', objectFit: 'cover', border: '1px solid #ddd' }}
-      onError={() => {
-        setImageErrors(prev => ({ ...prev, [sv.id]: true }));
-      }}
-    />
-  )}
-</td></td>
+              <td style={tdStyle}>
+                {(!sv.hinh_anh || imageErrors[sv.id]) ? (
+                  <span>❌</span>
+                ) : (
+                  <img 
+                    src={getImageUrl(sv)} 
+                    alt={sv.ma_sv}
+                    style={{ width: '40px', height: '40px', borderRadius: '4px', objectFit: 'cover', border: '1px solid #ddd' }}
+                    onError={() => {
+                      setImageErrors(prev => ({ ...prev, [sv.id]: true }));
+                    }}
+                  />
+                )}
+              </td>
               <td style={{...tdStyle, textAlign: 'center'}}>
                 <button onClick={() => openEditForm(sv)} style={{ border: 'none', background: 'none', cursor: 'pointer', marginRight: '10px' }}>✏️</button>
                 <button onClick={() => handleDelete(sv.id)} style={{ border: 'none', background: 'none', cursor: 'pointer' }}>🗑️</button>
@@ -217,38 +192,19 @@ const getImageUrl = (sv) => {
         </tbody>
       </table>
 
-      {/* Phân trang */}
       <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center', gap: '10px', alignItems: 'center' }}>
         <button disabled={currentPage === 1} onClick={() => setCurrentPage(c => c - 1)} style={pageBtn}>&laquo;</button>
         <span>Trang {currentPage} / {totalPages}</span>
         <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(c => c + 1)} style={pageBtn}>&raquo;</button>
       </div>
-
-      {/* Modal Excel */}
-      {isExcelModalOpen && (
-        <div style={modalOverlay}>
-          <div style={modalContent}>
-            <h3>Nhập danh sách Excel</h3>
-            <input type="file" accept=".xlsx, .xls" onChange={e => setSelectedExcelFile(e.target.files[0])} style={{ marginBottom: '20px' }} />
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-              <button onClick={() => setIsExcelModalOpen(false)}>Đóng</button>
-              <button onClick={handleImportExcel} style={{ backgroundColor: '#10b981', color: '#fff', border: 'none', padding: '8px 15px', borderRadius: '4px' }}>Tải lên</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
 
-// Styles
 const thStyle = { padding: '16px', fontWeight: '600', color: '#374151' };
 const tdStyle = { padding: '16px' };
 const inputStyle = { padding: '10px', borderRadius: '6px', border: '1px solid #ddd' };
 const btnAdd = { backgroundColor: '#2563eb', color: '#fff', padding: '10px 16px', border: 'none', borderRadius: '8px', cursor: 'pointer' };
-const btnExcel = { backgroundColor: '#10b981', color: '#fff', padding: '10px 16px', border: 'none', borderRadius: '8px', cursor: 'pointer' };
 const pageBtn = { padding: '5px 15px', cursor: 'pointer' };
-const modalOverlay = { position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 };
-const modalContent = { backgroundColor: '#fff', padding: '30px', borderRadius: '12px', width: '400px' };
 
 export default SinhVienList;

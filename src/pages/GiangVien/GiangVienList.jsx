@@ -19,7 +19,7 @@ function GiangVienList() {
   });
 
   // Excel state
-  const [selectedExcelFile, setSelectedExcelFile] = useState(null);
+  // const [selectedExcelFile, setSelectedExcelFile] = useState(null);
 
   const token = localStorage.getItem('token');
   const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000';
@@ -104,25 +104,25 @@ function GiangVienList() {
     }
   };
 
-  const handleImportExcel = async () => {
-    if (!selectedExcelFile) return alert("Chọn file Excel trước!");
-    const data = new FormData();
-    data.append('file', selectedExcelFile);
-    try {
-      await axios.post(`${apiBase}/import`, data, {
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      alert("Import thành công!");
-      setIsExcelModalOpen(false);
-      fetchData();
-    } catch (err) { 
-      console.error("Lỗi import:", err);
-      alert("Lỗi import Excel!"); 
-    }
-  };
+  // const handleImportExcel = async () => {
+  //   if (!selectedExcelFile) return alert("Chọn file Excel trước!");
+  //   const data = new FormData();
+  //   data.append('file', selectedExcelFile);
+  //   try {
+  //     await axios.post(`${apiBase}/import`, data, {
+  //       headers: { 
+  //         'Authorization': `Bearer ${token}`,
+  //         'Content-Type': 'multipart/form-data'
+  //       }
+  //     });
+  //     alert("Import thành công!");
+  //     setIsExcelModalOpen(false);
+  //     fetchData();
+  //   } catch (err) { 
+  //     console.error("Lỗi import:", err);
+  //     alert("Lỗi import Excel!"); 
+  //   }
+  // };
 
   return (
     <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
@@ -160,7 +160,7 @@ function GiangVienList() {
         </button>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+      {/* <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
         <input 
           type="file" 
           onChange={(e) => setSelectedExcelFile(e.target.files[0])}
@@ -172,7 +172,7 @@ function GiangVienList() {
         >
           Import Excel
         </button>
-      </div>
+      </div> */}
 
       <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #e2e8f0' }}>
         <thead>

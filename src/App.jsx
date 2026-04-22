@@ -15,6 +15,9 @@ import TrainDuLieu from './pages/TrainDuLieu/TrainDuLieu';
 import PhongThiCaNhan from './pages/GiangVien/PhongThiCaNhan';
 import DiemDanhLichThi from './pages/GiangVien/DiemDanhLichThi';
 import DiemDanhCamera from './pages/GiangVien/DiemDanhCamera';
+import Dashboard from './pages/Home/Dashboard';
+import TaiKhoan from './pages/GiangVien/TaiKhoan';
+import DoiMatKhau from './pages/GiangVien/DoiMatKhau';
 
 // Các component hiển thị tạm thời tránh bị lỗi
 const DummyAdmin = ({ title }) => <div style={{padding: '24px', background: 'white', borderRadius: '12px'}}><h2>Màn hình Admin: {title}</h2></div>;
@@ -40,6 +43,7 @@ function App() {
           <Route path="mon-hoc" element={<MonHocList />} />
           <Route path="train-du-lieu" element={<TrainDuLieu />} />
           <Route path="lich-thi" element={<LichThiList />} />
+          <Route path="tai-khoan" element={<TaiKhoan />} />
           
           {/* LUỒNG ĐIỂM DANH DÙNG CHUNG CHO CẢ ADMIN VÀ GIẢNG VIÊN */}
           <Route path="ds-phong-thi" element={<PhongThiCaNhan />} />
@@ -60,7 +64,9 @@ function App() {
 
           {/* CÁC TRANG CHƯA LÀM, HIỂN THỊ TẠM DUMMY */}
           <Route path="lich-thi" element={<DummyTeacher title="Lịch thi toàn trường" />} /> 
-          <Route path="tai-khoan" element={<DummyTeacher title="Thông tin cá nhân" />} /> 
+          <Route path="tai-khoan" element={<TaiKhoan />} /> 
+          <Route path="doi-mat-khau" element={<DoiMatKhau />} /> 
+
         </Route>
 
       </Routes>

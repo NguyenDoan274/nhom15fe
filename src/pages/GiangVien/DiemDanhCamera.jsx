@@ -60,7 +60,6 @@ function DiemDanhCamera() {
     fetchDanhSach();
   };
 
-//   const captureAndRecognize = async () => {
 //     if (!videoRef.current || !isCameraOpen) return;
 
 //     setIsProcessing(true);

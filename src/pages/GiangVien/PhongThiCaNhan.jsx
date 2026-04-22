@@ -20,7 +20,7 @@ const location = useLocation();
     try {
       // Gọi API lấy danh sách lịch thi
       const baseURL = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8000';
-      const res = await axios.get(`${baseURL}/api/lichthi`, {
+      const res = await axios.get(`${baseURL}/api/diemdanh`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const rawData = res.data?.data?.data || res.data?.data || [];

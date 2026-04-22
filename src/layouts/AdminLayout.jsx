@@ -29,6 +29,7 @@ function AdminLayout() {
           <li><Link to="/admin/ds-phong-thi" className={`menu-item ${isActive('/admin/ds-phong-thi') ? 'active' : ''}`}>📝 DS phòng thi cá nhân</Link></li>
           
           <li><Link to="/admin/train-du-lieu" className={`menu-item ${isActive('/admin/train-du-lieu') ? 'active' : ''}`}>🧠 Train dữ liệu AI</Link></li>
+        <li><Link to="/admin/tai-khoan" className={`menu-item ${isActive('/admin/tai-khoan') ? 'active' : ''}`}>👤 Tài khoản</Link></li>
         </ul>
       </aside>
 
